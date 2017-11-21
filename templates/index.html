@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>I have lots of fruits, check them out!</h1>
+<ol>
+  {% for fruit in fruits %}
+    <li>{{ fruit.name }} (Sweetness: {{ fruit.sweetness }})</li>
+  {% endfor %}
+</ol>
+{% endblock %}
