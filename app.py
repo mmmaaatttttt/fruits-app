@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from fruits import Fruit
+from flask_modus import Modus
 
 fruits = [
     Fruit("apple", 6),
@@ -8,6 +9,7 @@ fruits = [
 ]
 
 app = Flask(__name__)
+modus = Modus(app)
 
 @app.route("/fruits", methods=["GET", "POST"])
 def index():
@@ -24,14 +26,16 @@ def index():
 def new():
     return render_template("new.html")
 
-@app.route("/fruits/<int:id>")
+@app.route("/fruits/<int:id>", methods=["GET", "DELETE"])
 def show(id):
     found_fruit = [
         fruit
         for fruit in fruits 
         if fruit.id == id
     ]
-    if found_fruit:
+    if request.method == "DELETE":
+        fruits.remove(found_fruit[0])
+    if found_fruit and request.method == "GET":
         return render_template("show.html", fruit=found_fruit[0])
     return redirect(url_for("index"))
 
