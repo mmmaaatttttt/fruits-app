@@ -24,6 +24,17 @@ def index():
 def new():
     return render_template("new.html")
 
+@app.route("/fruits/<int:id>")
+def show(id):
+    found_fruit = [
+        fruit
+        for fruit in fruits 
+        if fruit.id == id
+    ]
+    if found_fruit:
+        return render_template("show.html", fruit=found_fruit[0])
+    return redirect(url_for("index"))
+
 if __name__ == "__main__":
     app.run(debug=True)
 
