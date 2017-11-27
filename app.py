@@ -1,15 +1,28 @@
 from flask import Flask, render_template, request, redirect, url_for
-from fruits import Fruit
 from flask_modus import Modus
-
-fruits = [
-    Fruit("apple", 6),
-    Fruit("banana", 9),
-    Fruit("cherry", 6)
-]
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgres://localhost/fruits-db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 modus = Modus(app)
+db = SQLAlchemy(app)
+
+class Fruit(db.Model):
+
+    __tablename__ = "fruits"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text)
+    sweetness = db.Column(db.Integer)
+
+    def __init__(self, name, sweetness):
+        self.name = name
+        self.sweetness = sweetness
+
+    def __repr__(self):
+        return f"Fruit #{self.id}; Name: {self.name}; Sweetness: {self.sweetness}"
 
 @app.route("/fruits", methods=["GET", "POST"])
 def index():
@@ -18,9 +31,10 @@ def index():
             request.form.get("name"),
             int(request.form.get("sweetness"))
         )
-        fruits.append(new_fruit)
+        db.session.add(new_fruit)
+        db.session.commit()
         return redirect(url_for("index"))
-    return render_template("index.html", fruits=fruits)
+    return render_template("index.html", fruits=Fruit.query.all())
 
 @app.route("/fruits/new")
 def new():
@@ -28,34 +42,23 @@ def new():
 
 @app.route("/fruits/<int:id>", methods=["GET", "DELETE", "PATCH"])
 def show(id):
-    try:
-        found_fruit = [
-            fruit
-            for fruit in fruits 
-            if fruit.id == id
-        ][0]
-        if request.method == b"DELETE":
-            fruits.remove(found_fruit)
-        if request.method == b"PATCH":
-            found_fruit.name = request.form['name']
-            found_fruit.sweetness = int(request.form['sweetness'])
-        if request.method == "GET":
-            return render_template("show.html", fruit=found_fruit)
-        return redirect(url_for("index"))
-    except IndexError:
-        return render_template("404.html"), 404
+    found_fruit = Fruit.query.get_or_404(id)
+    if request.method == b"DELETE":
+        db.session.delete(found_fruit)
+        db.session.commit()
+    if request.method == b"PATCH":
+        found_fruit.name = request.form['name']
+        found_fruit.sweetness = int(request.form['sweetness'])
+        db.session.add(found_fruit)
+        db.session.commit()
+    if request.method == "GET":
+        return render_template("show.html", fruit=found_fruit)
+    return redirect(url_for("index"))
 
 @app.route("/fruits/<int:id>/edit")
 def edit(id):
-    try:
-        found_fruit = [
-            fruit
-            for fruit in fruits 
-            if fruit.id == id
-        ][0]
-        return render_template("edit.html", fruit=found_fruit)
-    except IndexError:
-        return render_template("404.html"), 404
+    found_fruit = Fruit.query.get_or_404(id)
+    return render_template("edit.html", fruit=found_fruit)
 
 if __name__ == "__main__":
     app.run(debug=True)
