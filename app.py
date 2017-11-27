@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, abort
+from flask import Flask, render_template, request, redirect, url_for
 from fruits import Fruit
 from flask_modus import Modus
 
@@ -25,7 +25,7 @@ def ensure_valid_id(fn):
         ]
         if len(found_fruit) == 1:
             return fn(*args, **kwargs)
-        return abort(404)
+        return render_template("404.html"), 404
     return wrapper
 
 @app.route("/fruits", methods=["GET", "POST"])
