@@ -26,7 +26,7 @@ def index():
 def new():
     return render_template("new.html")
 
-@app.route("/fruits/<int:id>", methods=["GET", "DELETE"])
+@app.route("/fruits/<int:id>", methods=["GET", "DELETE", "PATCH"])
 def show(id):
     found_fruit = [
         fruit
@@ -35,8 +35,22 @@ def show(id):
     ]
     if request.method == b"DELETE":
         fruits.remove(found_fruit[0])
+    if request.method == b"PATCH":
+        found_fruit[0].name = request.form['name']
+        found_fruit[0].sweetness = int(request.form['sweetness'])
     if found_fruit and request.method == "GET":
         return render_template("show.html", fruit=found_fruit[0])
+    return redirect(url_for("index"))
+
+@app.route("/fruits/<int:id>/edit")
+def edit(id):
+    found_fruit = [
+        fruit
+        for fruit in fruits 
+        if fruit.id == id
+    ]
+    if found_fruit:
+        return render_template("edit.html", fruit=found_fruit[0])
     return redirect(url_for("index"))
 
 if __name__ == "__main__":

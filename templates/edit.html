@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>What fruit are you trying to update???</h1>
+<form action="{{ url_for('show', id=fruit.id) }}?_method=PATCH" method="POST">
+  <label for="name">Name</label>
+  <input type="text" id="name" name="name" value="{{ fruit.name }}">
+  <label for="sweetness">Sweetness</label>
+  <input type="number" id="sweetness" name="sweetness" min="0" max="10" step="1" value="{{ fruit.sweetness }}">
+  <input type="submit" value="UPDATE THAT FRUIT!!!">
+</form>
+{% endblock %}
