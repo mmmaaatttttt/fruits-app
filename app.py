@@ -33,7 +33,7 @@ def show(id):
         for fruit in fruits 
         if fruit.id == id
     ]
-    if request.method == "DELETE":
+    if request.method == b"DELETE":
         fruits.remove(found_fruit[0])
     if found_fruit and request.method == "GET":
         return render_template("show.html", fruit=found_fruit[0])
