@@ -18,12 +18,14 @@ class Fruit(db.Model):
     image = db.Column(db.Text)
     sweetness = db.Column(db.Integer)
     sourness = db.Column(db.Integer)
+    price = db.Column(db.Integer)
 
-    def __init__(self, name, sweetness, sourness, image):
+    def __init__(self, name, sweetness, sourness, image, price):
         self.name = name
         self.sweetness = sweetness
         self.sourness = sourness
         self.image = image
+        self.price = price
 
     def __repr__(self):
         return f"Fruit #{self.id}; Name: {self.name}; Sweetness: {self.sweetness}; Sourness: {self.sourness}"
