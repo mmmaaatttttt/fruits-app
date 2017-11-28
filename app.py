@@ -3,7 +3,7 @@ from flask_modus import Modus
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgres://localhost/fruits-db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgres://localhost/fruits-db-brand-new"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 modus = Modus(app)
@@ -15,14 +15,18 @@ class Fruit(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text)
+    image = db.Column(db.Text)
     sweetness = db.Column(db.Integer)
+    sourness = db.Column(db.Integer)
 
-    def __init__(self, name, sweetness):
+    def __init__(self, name, sweetness, sourness, image):
         self.name = name
         self.sweetness = sweetness
+        self.sourness = sourness
+        self.image = image
 
     def __repr__(self):
-        return f"Fruit #{self.id}; Name: {self.name}; Sweetness: {self.sweetness}"
+        return f"Fruit #{self.id}; Name: {self.name}; Sweetness: {self.sweetness}; Sourness: {self.sourness}"
 
 @app.route("/fruits", methods=["GET", "POST"])
 def index():
